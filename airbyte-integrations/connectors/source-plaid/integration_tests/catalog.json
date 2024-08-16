@@ -63,7 +63,8 @@
                   "type": { "type": "string" },
                   "reference_number": { "type": ["string", "null"] },
                   "website": { "type": ["string", "null"] },
-                  "confidence_level": { "type": ["string", "null"] }
+                  "confidence_level": { "type": ["string", "null"] },
+                  "logo_url": { "type": ["string", "null"] }
                 }
               }
             },
@@ -105,6 +106,12 @@
             "check_number": { "type": ["string", "null"] },
             "datetime": { "type": ["string", "null"] },
             "merchant_name": { "type": ["string", "null"] },
+            "name": { "type": ["string"] },
+            "website": { "type": ["string", "null"] },
+            "merchant_entity_id": { "type": ["string", "null"] },
+            "logo_url": { "type": ["string", "null"] },
+            "personal_finance_category_icon_url": { "type": ["string"]},
+            "transaction_type": { "type": ["string"]},
             "pending_transaction_id": { "type": ["string", "null"] },
             "personal_finance_category": {
               "type": ["object", "null"],
