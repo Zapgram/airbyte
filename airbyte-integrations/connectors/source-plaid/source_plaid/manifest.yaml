@@ -108,6 +108,9 @@ streams:
       - type: RemoveFields
         field_pointers:
           - - type
+      - type: RemoveFields
+        field_pointers:
+          - - transaction_type
   - type: DeclarativeStream
     name: transaction
     primary_key:
@@ -166,6 +169,11 @@ streams:
                   type:
                     - string
                     - "null"
+                logo_url:
+                  type:
+                    - string
+                    - "null"
+
             type: array
           date:
             type: string
@@ -215,6 +223,21 @@ streams:
               - object
               - "null"
           merchant_name:
+            type:
+              - string
+              - "null"
+          name:
+            type:
+              - string
+          website:
+            type:
+              - string
+              - "null"
+          merchant_entity_id:
+            type:
+              - string
+              - "null"
+          logo_url:
             type:
               - string
               - "null"
@@ -288,8 +311,13 @@ streams:
             type:
               - string
               - "null"
+          personal_finance_category_icon_url:
+            type: string
           transaction_id:
             type: string
+          transaction_type:
+            type: string
+
           unofficial_currency_code:
             type:
               - string
