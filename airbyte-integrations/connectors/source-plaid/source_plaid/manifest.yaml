@@ -108,8 +108,8 @@ streams:
       - type: RemoveFields
         field_pointers:
           - - type
-
-  - type: DeclarativeStream
+  - type: CustomStream
+    class_name: source_plaid.components.PlaidDeclarativeStream
     name: transaction
     primary_key:
       - transaction_id
@@ -332,7 +332,8 @@ streams:
           - payment_channel
         type: object
     retriever:
-      type: SimpleRetriever
+      type: CustomRetriever
+      class_name: source_plaid.components.PlaidRetriever
       requester:
         type: HttpRequester
         url_base: https://{{config['plaid_env']}}.plaid.com

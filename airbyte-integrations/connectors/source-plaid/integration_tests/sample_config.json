@@ -3,6 +3,5 @@
   "api_key": "??",
   "client_id": "??",
   "plaid_env": "sandbox",
-  "cursor": null,
   "days_requested": 730
 }
