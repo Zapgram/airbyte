@@ -344,11 +344,11 @@ streams:
           type: NoAuth
         request_body_json:
           secret: "{{config['api_key']}}"
-          cursor: "{{ next_page_token.next_page_token }}"
+          cursor: "{{next_page_token.next_page_token}}"
           count: 500
           options:
             include_original_description: true
-            days_requested: 730
+            days_requested: "{{config['days_requested']}}"
           client_id: "{{config['client_id']}}"
           access_token: "{{config['access_token']}}"
       record_selector:
@@ -363,8 +363,8 @@ streams:
         type: DefaultPaginator
         pagination_strategy:
           type: CursorPagination
-          cursor_value: "{{ response.get('next_cursor') }}"
-          stop_condition: "{{ response.has_more is false }}"
+          cursor_value: "{{response.get('next_cursor')}}"
+          stop_condition: "{{response.has_more is false}}"
     transformations:
       - type: RemoveFields
         field_pointers:
