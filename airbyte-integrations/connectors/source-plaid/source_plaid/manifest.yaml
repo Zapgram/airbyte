@@ -5,109 +5,109 @@ check:
   stream_names:
     - balance
 streams:
-  - type: DeclarativeStream
-    name: balance
-    primary_key:
-      - account_id
-    schema_loader:
-      type: InlineSchemaLoader
-      schema:
-        $schema: http://json-schema.org/schema#
-        properties:
-          account_id:
-            type: string
-          available:
-            type:
-              - "null"
-              - number
-          current:
-            type: number
-          iso_currency_code:
-            type:
-              - "null"
-              - string
-          limit:
-            type:
-              - "null"
-              - number
-          unofficial_currency_code:
-            type:
-              - "null"
-              - string
-        required:
-          - account_id
-          - current
-        type: object
-    retriever:
-      type: SimpleRetriever
-      requester:
-        type: HttpRequester
-        url_base: https://{{config['plaid_env']}}.plaid.com
-        path: /accounts/balance/get
-        http_method: POST
-        request_parameters: {}
-        request_headers: {}
-        authenticator:
-          type: NoAuth
-        request_body_json:
-          secret: "{{config['api_key']}}"
-          options:
-            min_last_updated_datetime: "{{format_datetime(config['start_date'], '%Y-%m-%dT%H:%M:%SZ')}}"
-          client_id: "{{config['client_id']}}"
-          access_token: "{{config['access_token']}}"
-      record_selector:
-        type: RecordSelector
-        extractor:
-          type: DpathExtractor
-          field_path:
-            - accounts
-            - "*"
-      paginator:
-        type: NoPagination
-    transformations:
-      - type: AddFields
-        fields:
-          - path:
-              - available
-            value: "{{record['balances']['available']}}"
-      - type: AddFields
-        fields:
-          - path:
-              - current
-            value: "{{record['balances']['current']}}"
-      - type: AddFields
-        fields:
-          - path:
-              - iso_currency_code
-            value: "{{record['balances']['iso_currency_code']}}"
-      - type: AddFields
-        fields:
-          - path:
-              - limit
-            value: "{{record['balances']['limit']}}"
-      - type: AddFields
-        fields:
-          - path:
-              - unofficial_currency_code
-            value: "{{record['balances']['unofficial_currency_code']}}"
-      - type: RemoveFields
-        field_pointers:
-          - - balances
-      - type: RemoveFields
-        field_pointers:
-          - - mask
-      - type: RemoveFields
-        field_pointers:
-          - - name
-      - type: RemoveFields
-        field_pointers:
-          - - official_name
-      - type: RemoveFields
-        field_pointers:
-          - - subtype
-      - type: RemoveFields
-        field_pointers:
-          - - type
+  # - type: DeclarativeStream
+  #   name: balance
+  #   primary_key:
+  #     - account_id
+  #   schema_loader:
+  #     type: InlineSchemaLoader
+  #     schema:
+  #       $schema: http://json-schema.org/schema#
+  #       properties:
+  #         account_id:
+  #           type: string
+  #         available:
+  #           type:
+  #             - "null"
+  #             - number
+  #         current:
+  #           type: number
+  #         iso_currency_code:
+  #           type:
+  #             - "null"
+  #             - string
+  #         limit:
+  #           type:
+  #             - "null"
+  #             - number
+  #         unofficial_currency_code:
+  #           type:
+  #             - "null"
+  #             - string
+  #       required:
+  #         - account_id
+  #         - current
+  #       type: object
+  #   retriever:
+  #     type: SimpleRetriever
+  #     requester:
+  #       type: HttpRequester
+  #       url_base: https://{{config['plaid_env']}}.plaid.com
+  #       path: /accounts/balance/get
+  #       http_method: POST
+  #       request_parameters: {}
+  #       request_headers: {}
+  #       authenticator:
+  #         type: NoAuth
+  #       request_body_json:
+  #         secret: "{{config['api_key']}}"
+  #         options:
+  #           min_last_updated_datetime: "{{format_datetime(config['start_date'], '%Y-%m-%dT%H:%M:%SZ')}}"
+  #         client_id: "{{config['client_id']}}"
+  #         access_token: "{{config['access_token']}}"
+  #     record_selector:
+  #       type: RecordSelector
+  #       extractor:
+  #         type: DpathExtractor
+  #         field_path:
+  #           - accounts
+  #           - "*"
+  #     paginator:
+  #       type: NoPagination
+  #   transformations:
+  #     - type: AddFields
+  #       fields:
+  #         - path:
+  #             - available
+  #           value: "{{record['balances']['available']}}"
+  #     - type: AddFields
+  #       fields:
+  #         - path:
+  #             - current
+  #           value: "{{record['balances']['current']}}"
+  #     - type: AddFields
+  #       fields:
+  #         - path:
+  #             - iso_currency_code
+  #           value: "{{record['balances']['iso_currency_code']}}"
+  #     - type: AddFields
+  #       fields:
+  #         - path:
+  #             - limit
+  #           value: "{{record['balances']['limit']}}"
+  #     - type: AddFields
+  #       fields:
+  #         - path:
+  #             - unofficial_currency_code
+  #           value: "{{record['balances']['unofficial_currency_code']}}"
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - balances
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - mask
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - name
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - official_name
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - subtype
+  #     - type: RemoveFields
+  #       field_pointers:
+  #         - - type
   - type: DeclarativeStream
     name: transaction
     primary_key:
@@ -335,6 +335,8 @@ streams:
       class_name: source_plaid.components.PlaidRetriever
       requester:
         type: HttpRequester
+        $parameters:
+          name: transaction
         url_base: https://{{config['plaid_env']}}.plaid.com
         path: /transactions/sync
         http_method: POST
@@ -354,7 +356,15 @@ streams:
       record_selector:
         type: RecordSelector
         $parameters:
-          transformations: [[]]
+          transformations:
+            - type: AddFields
+              fields:
+                - path:
+                    - fake
+                  value: "fake"
+        #     - type: RemoveFields
+        #       field_pointers:
+        #         - ["transaction_type"]
         extractor:
           type: CustomRecordExtractor
           class_name: source_plaid.components.PlaidTransactionExtractor
@@ -363,14 +373,22 @@ streams:
             - "modified"
       paginator:
         type: DefaultPaginator
+        $parameters:
+          url_base: https://{{config['plaid_env']}}.plaid.com
         pagination_strategy:
           type: CursorPagination
           cursor_value: "{{response.get('next_cursor')}}"
           stop_condition: "{{response.has_more is false}}"
+    # transformations:
+    #   - type: RemoveFields
+    #     field_pointers:
+    #       - ["transaction_type"]
     transformations:
-      - type: RemoveFields
-        field_pointers:
-          - ["transaction_type"]
+      - type: AddFields
+        fields:
+          - path:
+              - fake
+            value: "fake"
 spec:
   connection_specification:
     $schema: http://json-schema.org/draft-07/schema#

@@ -1,3 +1,4 @@
+from functools import partial
 import inspect
 import logging
 import typing
@@ -17,6 +18,8 @@ from dataclasses import InitVar, dataclass, field
 from typing import Any, Iterable, List, Mapping, MutableMapping, Optional, Union
 
 
+from airbyte_cdk.sources.declarative.partition_routers.single_partition_router import SinglePartitionRouter
+from airbyte_cdk.sources.declarative.requesters.paginators.no_pagination import NoPagination
 from airbyte_cdk.models import SyncMode
 from airbyte_cdk.sources.connector_state_manager import ConnectorStateManager
 from airbyte_cdk.sources.declarative.declarative_stream import DeclarativeStream
@@ -39,6 +42,8 @@ from airbyte_cdk.sources.streams.checkpoint import (
 from airbyte_cdk.sources.utils.schema_helpers import InternalConfig, ResourceSchemaLoader
 from airbyte_cdk.sources.utils.slice_logger import SliceLogger
 from airbyte_cdk.sources.utils.transform import TransformConfig, TypeTransformer
+
+from airbyte_cdk.sources.types import Config, Record, StreamSlice, StreamState
 
 
 @dataclass
@@ -79,6 +84,16 @@ class PlaidTransactionExtractor(RecordExtractor):
 class PlaidRetriever(SimpleRetriever):
     state: MutableMapping[str, Any]
 
+    def __post_init__(self, parameters: Mapping[str, Any]) -> None:
+        breakpoint()
+        self.stream_slicer = SinglePartitionRouter(parameters={})
+        self._paginator = self.paginator or NoPagination(parameters=parameters)
+        self._last_response: Optional[requests.Response] = None
+        self._last_page_size: int = 0
+        self._last_record: Optional[Record] = None
+        self._parameters = parameters
+        self._name = InterpolatedString(self._name, parameters=parameters) if isinstance(self._name, str) else self._name
+
     @property
     def next_cursor(self) -> Optional[str]:
         return self._last_response.json().get("next_cursor")
@@ -102,7 +117,7 @@ class PlaidRetriever(SimpleRetriever):
         most_recent_record_from_slice = None
         record_generator = partial(
             self._parse_records,
-            stream_state=self.state or {},
+            stream_state=self.state or {},  # put some state here
             stream_slice=_slice,
             records_schema=records_schema,
         )
