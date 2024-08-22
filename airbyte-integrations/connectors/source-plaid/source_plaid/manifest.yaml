@@ -108,8 +108,7 @@ streams:
       - type: RemoveFields
         field_pointers:
           - - type
-  - type: CustomStream
-    class_name: source_plaid.components.PlaidDeclarativeStream
+  - type: DeclarativeStream
     name: transaction
     primary_key:
       - transaction_id
@@ -354,6 +353,8 @@ streams:
           access_token: "{{config['access_token']}}"
       record_selector:
         type: RecordSelector
+        $parameters:
+          transformations: [[]]
         extractor:
           type: CustomRecordExtractor
           class_name: source_plaid.components.PlaidTransactionExtractor
