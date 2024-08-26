@@ -25,6 +25,7 @@ from airbyte_cdk.sources.connector_state_manager import ConnectorStateManager
 from airbyte_cdk.sources.declarative.declarative_stream import DeclarativeStream
 from airbyte_cdk.sources.declarative.interpolation import InterpolatedString
 from airbyte_cdk.sources.declarative.migrations.state_migration import StateMigration
+from airbyte_cdk.sources.declarative.parsers.model_to_component_factory import ModelToComponentFactory
 from airbyte_cdk.sources.declarative.retrievers.simple_retriever import SimpleRetriever
 from airbyte_cdk.sources.declarative.schema import DefaultSchemaLoader
 from airbyte_cdk.sources.declarative.schema.schema_loader import SchemaLoader
@@ -44,6 +45,7 @@ from airbyte_cdk.sources.utils.slice_logger import SliceLogger
 from airbyte_cdk.sources.utils.transform import TransformConfig, TypeTransformer
 
 from airbyte_cdk.sources.types import Config, Record, StreamSlice, StreamState
+from airbyte_cdk.sources.declarative.models.declarative_component_schema import RemoveFields
 
 
 @dataclass
@@ -85,7 +87,6 @@ class PlaidRetriever(SimpleRetriever):
     state: MutableMapping[str, Any]
 
     def __post_init__(self, parameters: Mapping[str, Any]) -> None:
-        breakpoint()
         self.stream_slicer = SinglePartitionRouter(parameters={})
         self._paginator = self.paginator or NoPagination(parameters=parameters)
         self._last_response: Optional[requests.Response] = None
@@ -93,6 +94,14 @@ class PlaidRetriever(SimpleRetriever):
         self._last_record: Optional[Record] = None
         self._parameters = parameters
         self._name = InterpolatedString(self._name, parameters=parameters) if isinstance(self._name, str) else self._name
+        self.record_selector.transformations = [
+            ModelToComponentFactory().create_component(
+                RemoveFields,
+                transformation,
+                self.config,
+            )
+            for transformation in self.record_selector.transformations
+        ]
 
     @property
     def next_cursor(self) -> Optional[str]:

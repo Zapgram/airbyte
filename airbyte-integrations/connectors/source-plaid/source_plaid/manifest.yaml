@@ -357,17 +357,17 @@ streams:
         type: RecordSelector
         $parameters:
           transformations:
-            - type: AddFields
-              fields:
-                - path:
-                    - fake
-                  value: "fake"
-        #     - type: RemoveFields
-        #       field_pointers:
-        #         - ["transaction_type"]
+            - type: RemoveFields
+              field_pointers:
+                - ["transaction_type"]
         extractor:
           type: CustomRecordExtractor
           class_name: source_plaid.components.PlaidTransactionExtractor
+          $parameters:
+            transformations:
+              - type: RemoveFields
+                field_pointers:
+                  - ["transaction_type"]
           field_path:
             - "added"
             - "modified"
@@ -379,16 +379,6 @@ streams:
           type: CursorPagination
           cursor_value: "{{response.get('next_cursor')}}"
           stop_condition: "{{response.has_more is false}}"
-    # transformations:
-    #   - type: RemoveFields
-    #     field_pointers:
-    #       - ["transaction_type"]
-    transformations:
-      - type: AddFields
-        fields:
-          - path:
-              - fake
-            value: "fake"
 spec:
   connection_specification:
     $schema: http://json-schema.org/draft-07/schema#
