@@ -84,7 +84,7 @@ class PlaidTransactionExtractor(RecordExtractor):
 
 @dataclass
 class PlaidRetriever(SimpleRetriever):
-    state: MutableMapping[str, Any]
+    _state: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self, parameters: Mapping[str, Any]) -> None:
         self.stream_slicer = SinglePartitionRouter(parameters={})
@@ -102,6 +102,14 @@ class PlaidRetriever(SimpleRetriever):
             )
             for transformation in self.record_selector.transformations
         ]
+
+    @property
+    def state(self) -> StreamState:
+        return self._state
+
+    @state.setter
+    def state(self, value: StreamState) -> None:
+        self._state = value
 
     @property
     def next_cursor(self) -> Optional[str]:
